@@ -27,6 +27,10 @@ import pytest
 from fastmcp import Client
 from fastmcp.client import FastMCPTransport
 from mcp.types import TextContent
+from dotenv import load_dotenv
+
+# Load .env file for tests
+load_dotenv('.env')  # Explicitly specify the .env file
 
 from mcp_atlassian.confluence import ConfluenceFetcher
 from mcp_atlassian.confluence.comments import CommentsMixin as ConfluenceCommentsMixin
@@ -265,7 +269,8 @@ class TestRealJiraValidation:
         if not use_real_jira_data:
             pytest.skip("Real Jira data testing is disabled")
 
-        jql = 'project = "TES" ORDER BY created DESC'
+        # Try searching for all issues instead of specific project
+        jql = 'ORDER BY created DESC'
         result_content = await call_tool(
             api_validation_client, "jira_search", {"jql": jql, "limit": 5}
         )

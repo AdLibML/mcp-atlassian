@@ -615,7 +615,7 @@ async def create_issue(
         str,
         Field(
             description=(
-                "The JIRA project key (e.g. 'PROJ', 'DEV', 'SUPPORT'). "
+                "The JIRA project key (e.g. 'SHARP'). "
                 "This is the prefix of issue keys in your project. "
                 "Never assume what it might be, always ask the user."
             )

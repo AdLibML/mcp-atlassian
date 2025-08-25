@@ -191,12 +191,22 @@ class AtlassianMCP(FastMCP[MainAppContext]):
         middleware: list[Middleware] | None = None,
         transport: Literal["streamable-http", "sse"] = "streamable-http",
     ) -> "Starlette":
-        user_token_mw = Middleware(UserTokenMiddleware, mcp_server_ref=self)
-        final_middleware_list = [user_token_mw]
+        # IMPORTANT: Do NOT wrap the SSE app in BaseHTTPMiddleware
+        final_middleware_list: list[Middleware] = []
+
+        if transport == "streamable-http":
+            # Only attach middleware for the streamable-http endpoint
+            final_middleware_list.append(
+                Middleware(UserTokenMiddleware, mcp_server_ref=self)
+            )
+
         if middleware:
             final_middleware_list.extend(middleware)
+
         app = super().http_app(
-            path=path, middleware=final_middleware_list, transport=transport
+            path=path,
+            middleware=final_middleware_list,
+            transport=transport,
         )
         return app
 
