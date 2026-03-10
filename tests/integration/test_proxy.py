@@ -41,7 +41,7 @@ def test_jira_client_passes_proxies_to_requests(monkeypatch):
     client = JiraClient(config=config)
     # Simulate a request
     client.jira._session.request(
-        "GET", "https://test.atlassian.net/rest/api/2/issue/TEST-1"
+        "GET", "https://test.atlassian.net/rest/api/3/issue/TEST-1"
     )
     assert mock_session.proxies["http"] == "http://proxy:8080"
     assert mock_session.proxies["https"] == "https://proxy:8443"

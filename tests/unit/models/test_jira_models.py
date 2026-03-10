@@ -576,7 +576,7 @@ class TestJiraIssue:
                 "outwardIssue": {
                     "id": "10001",
                     "key": "PROJ-789",
-                    "self": "https://example.atlassian.net/rest/api/2/issue/10001",
+                    "self": "https://example.atlassian.net/rest/api/3/issue/10001",
                     "fields": {
                         "summary": "Blocked Issue",
                         "status": {"name": "Open"},
@@ -596,7 +596,7 @@ class TestJiraIssue:
                 "inwardIssue": {
                     "id": "10002",
                     "key": "PROJ-111",
-                    "self": "https://example.atlassian.net/rest/api/2/issue/10002",
+                    "self": "https://example.atlassian.net/rest/api/3/issue/10002",
                     "fields": {
                         "summary": "Related Issue",
                         "status": {"name": "In Progress"},
@@ -1477,7 +1477,7 @@ class TestJiraLinkedIssue:
         data = {
             "id": "10001",
             "key": "PROJ-456",
-            "self": "https://example.atlassian.net/rest/api/2/issue/10001",
+            "self": "https://example.atlassian.net/rest/api/3/issue/10001",
             "fields": {
                 "summary": "Linked Issue Summary",
                 "status": {
@@ -1499,7 +1499,7 @@ class TestJiraLinkedIssue:
         assert linked_issue.key == "PROJ-456"
         assert (
             linked_issue.self_url
-            == "https://example.atlassian.net/rest/api/2/issue/10001"
+            == "https://example.atlassian.net/rest/api/3/issue/10001"
         )
         assert linked_issue.fields is not None
         assert linked_issue.fields.summary == "Linked Issue Summary"
@@ -1519,7 +1519,7 @@ class TestJiraLinkedIssue:
         linked_issue = JiraLinkedIssue(
             id="10001",
             key="PROJ-456",
-            self_url="https://example.atlassian.net/rest/api/2/issue/10001",
+            self_url="https://example.atlassian.net/rest/api/3/issue/10001",
             fields=JiraLinkedIssueFields(
                 summary="Linked Issue Summary",
                 status=JiraStatus(name="In Progress"),
@@ -1531,7 +1531,7 @@ class TestJiraLinkedIssue:
         assert simplified["id"] == "10001"
         assert simplified["key"] == "PROJ-456"
         assert (
-            simplified["self"] == "https://example.atlassian.net/rest/api/2/issue/10001"
+            simplified["self"] == "https://example.atlassian.net/rest/api/3/issue/10001"
         )
         assert simplified["fields"]["summary"] == "Linked Issue Summary"
         assert simplified["fields"]["status"]["name"] == "In Progress"
@@ -1549,12 +1549,12 @@ class TestJiraIssueLink:
                 "name": "Blocks",
                 "inward": "is blocked by",
                 "outward": "blocks",
-                "self": "https://example.atlassian.net/rest/api/2/issueLinkType/10000",
+                "self": "https://example.atlassian.net/rest/api/3/issueLinkType/10000",
             },
             "inwardIssue": {
                 "id": "10002",
                 "key": "PROJ-789",
-                "self": "https://example.atlassian.net/rest/api/2/issue/10002",
+                "self": "https://example.atlassian.net/rest/api/3/issue/10002",
                 "fields": {
                     "summary": "Inward Issue Summary",
                     "status": {

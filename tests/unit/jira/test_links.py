@@ -48,7 +48,7 @@ class TestLinksMixin:
         assert len(result) == 2
         assert result[0].name == "Blocks"
         assert result[1].name == "Duplicate"
-        links_mixin.jira.get.assert_called_once_with("rest/api/2/issueLinkType")
+        links_mixin.jira.get.assert_called_once_with("rest/api/3/issueLinkType")
 
     def test_get_issue_link_types_authentication_error(self, links_mixin):
         links_mixin.jira.get.side_effect = HTTPError(response=Mock(status_code=401))

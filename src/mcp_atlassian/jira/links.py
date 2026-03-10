@@ -28,7 +28,7 @@ class LinksMixin(JiraClient):
             Exception: If there is an error retrieving issue link types
         """
         try:
-            link_types_response = self.jira.get("rest/api/2/issueLinkType")
+            link_types_response = self.jira.get("rest/api/3/issueLinkType")
             if not isinstance(link_types_response, dict):
                 msg = f"Unexpected return value type from `jira.get`: {type(link_types_response)}"
                 logger.error(msg)

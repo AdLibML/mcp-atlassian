@@ -267,7 +267,14 @@ class JiraIssue(ApiModel, TimestampMixin):
         issue_id = str(data.get("id", JIRA_DEFAULT_ID))
         key = str(data.get("key", JIRA_DEFAULT_KEY))
         summary = str(fields.get("summary", EMPTY_STRING))
-        description = fields.get("description")
+        description_raw = fields.get("description")
+        if isinstance(description_raw, dict):
+            # Convert ADF format to string
+            description = str(description_raw)
+        elif isinstance(description_raw, str):
+            description = description_raw
+        else:
+            description = EMPTY_STRING
 
         # Timestamps
         created = str(fields.get("created", EMPTY_STRING))

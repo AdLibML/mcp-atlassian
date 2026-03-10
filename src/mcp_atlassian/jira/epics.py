@@ -44,7 +44,18 @@ class EpicsMixin(
 
             # Find an Epic in the system
             epics_jql = "issuetype = Epic ORDER BY created DESC"
-            results = self.jira.jql(epics_jql, fields="*all", limit=1)
+            payload = {
+                "jql": epics_jql,
+                "fields": ["*all"],
+                "maxResults": 1
+            }
+            response = self.jira._session.post(
+                f"{self.config.url}/rest/api/3/search",
+                json=payload
+            )
+            response.raise_for_status()
+            results = response.json()
+
             if not isinstance(results, dict):
                 msg = f"Unexpected return value type from `jira.jql`: {type(results)}"
                 logger.error(msg)
@@ -780,14 +791,20 @@ class EpicsMixin(
         try:
             # Search for issues with type=Epic
             jql = "issuetype = Epic ORDER BY updated DESC"
-            response = self.jira.jql(jql, limit=1)
-            if not isinstance(response, dict):
-                msg = f"Unexpected return value type from `jira.jql`: {type(response)}"
-                logger.error(msg)
-                raise TypeError(msg)
+            payload = {
+                "jql": jql,
+                "fields": ["*all"],
+                "maxResults": 1
+            }
+            response = self.jira._session.post(
+                f"{self.config.url}/rest/api/3/search",
+                json=payload
+            )
+            response.raise_for_status()
+            result = response.json()
 
-            if response and "issues" in response and response["issues"]:
-                return response["issues"]
+            if response.status_code == 200 and result and "issues" in result and result["issues"]:
+                return result["issues"]
         except Exception as e:
             logger.warning(f"Error finding sample epic: {str(e)}")
         return []
@@ -811,13 +828,19 @@ class EpicsMixin(
                 f"issueFunction in issuesScopedToEpic('{epic_key}')",
             ]:
                 try:
-                    response = self.jira.jql(query, limit=5)
-                    if not isinstance(response, dict):
-                        msg = f"Unexpected return value type from `jira.jql`: {type(response)}"
-                        logger.error(msg)
-                        raise TypeError(msg)
-                    if response.get("issues"):
-                        return response["issues"]
+                    payload = {
+                        "jql": query,
+                        "fields": ["*all"],
+                        "maxResults": 5
+                    }
+                    response = self.jira._session.post(
+                        f"{self.config.url}/rest/api/3/search",
+                        json=payload
+                    )
+                    response.raise_for_status()
+                    result = response.json()
+                    if response.status_code == 200 and result.get("issues"):
+                        return result["issues"]
                 except Exception:
                     # Try next query format
                     continue
@@ -841,10 +864,29 @@ class EpicsMixin(
             List of JiraIssue models
         """
 
-        search_result = self.search_issues(jql, start=start, limit=limit)
-        if not search_result:
-            logger.warning(f"No issues found for epic {epic_key} with query: {jql}")
-        return search_result.issues
+        payload = {
+            "jql": jql,
+            "fields": ["*all"],
+            "maxResults": limit,
+            "startAt": start
+        }
+        response = self.jira._session.post(
+            f"{self.config.url}/rest/api/3/search",
+            json=payload
+        )
+        response.raise_for_status()
+        search_result = response.json()
+
+        if response.status_code == 200 and search_result:
+            if "issues" in search_result:
+                return search_result["issues"]
+            elif "total" in search_result and search_result["total"] == 0:
+                logger.warning(f"No issues found for epic {epic_key} with query: {jql}")
+            else:
+                logger.warning(f"Unexpected search result for epic {epic_key}: {search_result}")
+        else:
+            logger.warning(f"Error searching issues for epic {epic_key} with query: {jql}")
+        return []
 
     def update_epic_fields(self, issue_key: str, kwargs: dict[str, Any]) -> JiraIssue:
         """

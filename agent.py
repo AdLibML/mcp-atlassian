@@ -69,6 +69,18 @@ model = ChatOpenAI(
 # logger.info(f"Using model: {model.model}")
 
 if mode == "local":
+    raw_transport = os.environ.get("TRANSPORT", "streamable-http")
+    atlassian_transport = (
+        "streamable_http"
+        if raw_transport in {"streamable-http", "streamable_http"}
+        else raw_transport
+    )
+    atlassian_default_path = (
+        "/mcp" if atlassian_transport == "streamable_http" else "/sse"
+    )
+    atlassian_default_url = (
+        f"http://localhost:{os.environ.get('PORT', '10000')}{atlassian_default_path}"
+    )
     server_params = {
         # "math": {
         #     "command": "python",
@@ -101,11 +113,20 @@ if mode == "local":
         #     "transport": "stdio",
         # },
         "atlassian": {
-            "url": os.environ.get("ATLASSIAN_URL", "http://localhost:8000/sse"),
-            "transport": "sse",
+            "url": os.environ.get("ATLASSIAN_URL", atlassian_default_url),
+            "transport": atlassian_transport,
         }
     }
 else:
+    raw_transport = os.environ.get("TRANSPORT", "streamable-http")
+    atlassian_transport = (
+        "streamable_http"
+        if raw_transport in {"streamable-http", "streamable_http"}
+        else raw_transport
+    )
+    atlassian_default_path = (
+        "/mcp" if atlassian_transport == "streamable_http" else "/sse"
+    )
     server_params = {
         "math": {
             "url": os.environ.get("MATH_URL", "http://localhost:5001/mcp/sse"),
@@ -119,9 +140,12 @@ else:
             "url": os.environ.get("BRAVE_URL", "http://localhost:5002/mcp/sse"),
             "transport": "sse",
         },
-         "atlassian": {
-            "url": os.environ.get("ATLASSIAN_URL", "http://localhost:8000/sse"),
-            "transport": "sse",
+        "atlassian": {
+            "url": os.environ.get(
+                "ATLASSIAN_URL",
+                f"http://localhost:{os.environ.get('PORT', '10000')}{atlassian_default_path}",
+            ),
+            "transport": atlassian_transport,
         }
         # Add Spotify SSE URL if you have a production deployment
     }

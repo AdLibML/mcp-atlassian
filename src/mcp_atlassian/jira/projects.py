@@ -282,13 +282,18 @@ class ProjectsMixin(JiraClient, SearchOperationsProto):
             Count of issues in the project
         """
         try:
-            # Use JQL to count issues in the project
             jql = f'project = "{project_key}"'
-            result = self.jira.jql(jql=jql, fields="key", limit=1)
-            if not isinstance(result, dict):
-                msg = f"Unexpected return value type from `jira.jql`: {type(result)}"
-                logger.error(msg)
-                raise TypeError(msg)
+            payload = {
+                "jql": jql,
+                "fields": ["key"],
+                "maxResults": 1
+            }
+            response = self.jira._session.post(
+                f"{self.config.url}/rest/api/3/search",
+                json=payload
+            )
+            response.raise_for_status()
+            result = response.json()
 
             # Extract total from the response
             total = 0

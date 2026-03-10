@@ -204,26 +204,39 @@ class JiraClient:
         _ = self.config.url if hasattr(self, "config") else ""
         return self.preprocessor.clean_jira_text(text)
 
-    def _markdown_to_jira(self, markdown_text: str) -> str:
+    def _markdown_to_adf(self, markdown_text: str) -> dict:
         """
-        Convert Markdown syntax to Jira markup syntax.
-
+        Convert Markdown syntax to Atlassian Document Format (ADF).
+        
         Args:
             markdown_text: Text in Markdown format
-
+            
         Returns:
-            Text in Jira markup format
+            ADF document structure
         """
         if not markdown_text:
-            return ""
-
-        # Use the shared preprocessor if available
-        if hasattr(self, "preprocessor"):
-            return self.preprocessor.markdown_to_jira(markdown_text)
-
-        # Otherwise create a temporary one
-        _ = self.config.url if hasattr(self, "config") else ""
-        return self.preprocessor.markdown_to_jira(markdown_text)
+            return {
+                "type": "doc",
+                "version": 1,
+                "content": []
+            }
+        
+        # Simple conversion: wrap text in paragraph
+        return {
+            "type": "doc",
+            "version": 1,
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": markdown_text
+                        }
+                    ]
+                }
+            ]
+        }
 
     def get_paged(
         self,

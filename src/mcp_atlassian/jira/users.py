@@ -25,7 +25,7 @@ class UsersMixin(JiraClient):
 
     def get_current_user_account_id(self) -> str:
         """
-        Get the account ID of the current user.
+        Get the account ID of the current user using API v3.
 
         Returns:
             str: Account ID of the current user.
@@ -37,10 +37,12 @@ class UsersMixin(JiraClient):
             return self._current_user_account_id
 
         try:
-            logger.debug(
-                "Calling self.jira.myself() to get current user details for account ID."
-            )
-            myself_data = self.jira.myself()
+            logger.debug("Calling API v3 /myself endpoint to get current user details.")
+            
+            # Use direct API v3 call instead of jira.myself()
+            response = self.jira._session.get(f"{self.config.url}/rest/api/3/myself")
+            response.raise_for_status()
+            myself_data = response.json()
 
             if not isinstance(myself_data, dict):
                 error_msg = "Failed to get user data: response was not a dictionary."
@@ -55,37 +57,20 @@ class UsersMixin(JiraClient):
             if isinstance(myself_data.get("accountId"), str):
                 account_id = myself_data["accountId"]
             elif isinstance(myself_data.get("key"), str):
-                logger.info(
-                    "Using 'key' instead of 'accountId' for Jira Data Center/Server"
-                )
+                # Fallback to key if accountId is not available
                 account_id = myself_data["key"]
-            elif isinstance(myself_data.get("name"), str):
-                logger.info(
-                    "Using 'name' instead of 'accountId' for Jira Data Center/Server"
-                )
-                account_id = myself_data["name"]
-
-            if account_id is None:
-                error_msg = f"Could not find accountId, key, or name in user data: {str(myself_data)[:200]}"
-                raise ValueError(error_msg)
+            else:
+                error_msg = "No accountId or key found in user data."
+                logger.error(f"{error_msg} Available keys: {list(myself_data.keys())}")
+                raise Exception(error_msg)
 
             self._current_user_account_id = account_id
+            logger.debug(f"Successfully retrieved current user account ID: {account_id}")
             return account_id
-        except HTTPError as http_err:
-            response_content = ""
-            if http_err.response is not None:
-                try:
-                    response_content = http_err.response.text
-                except Exception:
-                    response_content = "(could not decode response content)"
-            logger.error(
-                f"HTTPError getting current user account ID: {http_err}. Response: {response_content[:500]}"
-            )
-            error_msg = f"Unable to get current user account ID: {http_err}"
-            raise Exception(error_msg) from http_err
+
         except Exception as e:
-            logger.error(f"Error getting current user account ID: {e}", exc_info=True)
-            error_msg = f"Unable to get current user account ID: {e}"
+            error_msg = f"Failed to get current user account ID: {e}"
+            logger.error(error_msg)
             raise Exception(error_msg) from e
 
     def _get_account_id(self, assignee: str) -> str:
@@ -175,7 +160,7 @@ class UsersMixin(JiraClient):
             Optional[str]: Account ID if found, None otherwise.
         """
         try:
-            url = f"{self.config.url}/rest/api/2/user/permission/search"
+            url = f"{self.config.url}/rest/api/3/user/permission/search"
             params = {"query": username, "permissions": "BROWSE"}
 
             auth = None

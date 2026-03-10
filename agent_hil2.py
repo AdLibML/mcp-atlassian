@@ -67,10 +67,21 @@ model = ChatOpenAI(
 # =========================
 # MCP servers
 # =========================
+raw_transport = os.environ.get("TRANSPORT", "streamable-http")
+atlassian_transport = (
+    "streamable_http"
+    if raw_transport in {"streamable-http", "streamable_http"}
+    else raw_transport
+)
+atlassian_default_path = "/mcp" if atlassian_transport == "streamable_http" else "/sse"
+atlassian_default_url = (
+    f"http://localhost:{os.environ.get('PORT', '10000')}{atlassian_default_path}"
+)
+
 server_params = {
     "atlassian": {
-        "url": os.environ.get("ATLASSIAN_URL", "http://localhost:8000/sse"),
-        "transport": "sse",  # or "stdio" if you prefer
+        "url": os.environ.get("ATLASSIAN_URL", atlassian_default_url),
+        "transport": atlassian_transport,
     }
 }
 
@@ -467,13 +478,13 @@ if __name__ == "__main__":
     # query = "Get all the projects from Jira."
     # query = "can you comment the stories in progress a way to solve the stuff and a stuctured strategy to do it."
     # query = "please extract and tell me the roadmap of the project from confluence."
-    # query ="from the jira tickets, what should i do first ?"
+    query = "from the jira tickets, what should i do first ?"
     # query ="Write a new page in confluence in the SHARP space and in the parent page called Project Management called 'project summary' Summarizing the project."
     # query ="give me the parent pages of the Sharp confluence space"
     # query ="Give me some pages in the confluence space 'sharp.'"
     # query ="Give me some info on the product architecture and about the legal. Link the two and say how legal can be relevant for the architecture. "
-    query = "Give all Confluence spaces you can see."
-    query = "From my personal space gary (space key  : ~712020d37b8394ef694a0dad694fb8e11026b4) give me the home content."
+    # query = "Give all Confluence spaces you can see."
+    # query = "From my personal space gary (space key  : ~712020d37b8394ef694a0dad694fb8e11026b4) give me the home content."
 
 
     final_state, final_text = asyncio.run(run_agent(query))

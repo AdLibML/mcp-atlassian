@@ -25,8 +25,11 @@ logging_level = logging.WARNING
 if is_env_truthy("MCP_VERBOSE"):
     logging_level = logging.DEBUG
 
-# Set up logging to STDOUT if MCP_LOGGING_STDOUT is set to true
-logging_stream = sys.stdout if is_env_truthy("MCP_LOGGING_STDOUT") else sys.stderr
+# Default server logs to stdout so they are visible in terminal sessions.
+# Users can still set MCP_LOGGING_STDOUT=false to force stderr.
+logging_stream = (
+    sys.stdout if is_env_truthy("MCP_LOGGING_STDOUT", "true") else sys.stderr
+)
 
 # Set up logging using the utility function
 logger = setup_logging(logging_level, logging_stream)
@@ -192,8 +195,11 @@ def main(
         else:
             current_logging_level = logging.WARNING
 
-    # Set up logging to STDOUT if MCP_LOGGING_STDOUT is set to true
-    logging_stream = sys.stdout if is_env_truthy("MCP_LOGGING_STDOUT") else sys.stderr
+    # Default server logs to stdout so they are visible in terminal sessions.
+    # Users can still set MCP_LOGGING_STDOUT=false to force stderr.
+    logging_stream = (
+        sys.stdout if is_env_truthy("MCP_LOGGING_STDOUT", "true") else sys.stderr
+    )
 
     global logger
     logger = setup_logging(current_logging_level, logging_stream)

@@ -26,7 +26,7 @@ def test_is_atlassian_cloud_url_multi_cloud_oauth():
     """Test that is_atlassian_cloud_url returns True for Multi-Cloud OAuth URLs."""
     # Test api.atlassian.com URLs used by Multi-Cloud OAuth
     assert (
-        is_atlassian_cloud_url("https://api.atlassian.com/ex/jira/abc123/rest/api/2/")
+        is_atlassian_cloud_url("https://api.atlassian.com/ex/jira/abc123/rest/api/3/")
         is True
     )
     assert (

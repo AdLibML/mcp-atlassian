@@ -564,7 +564,7 @@ class IssuesMixin(
 
             # Add description if provided (convert from Markdown to Jira format)
             if description:
-                fields["description"] = self._markdown_to_jira(description)
+                fields["description"] = self._markdown_to_adf(description)
 
             # Add assignee if provided
             if assignee:

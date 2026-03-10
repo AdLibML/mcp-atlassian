@@ -67,10 +67,21 @@ model = ChatOpenAI(
 # =========================
 # MCP servers
 # =========================
+raw_transport = os.environ.get("TRANSPORT", "streamable-http")
+atlassian_transport = (
+    "streamable_http"
+    if raw_transport in {"streamable-http", "streamable_http"}
+    else raw_transport
+)
+atlassian_default_path = "/mcp" if atlassian_transport == "streamable_http" else "/sse"
+atlassian_default_url = (
+    f"http://localhost:{os.environ.get('PORT', '10000')}{atlassian_default_path}"
+)
+
 server_params = {
     "atlassian": {
-        "url": os.environ.get("ATLASSIAN_URL", "http://localhost:8000/sse"),
-        "transport": "sse",  # switch to "stdio" if you prefer
+        "url": os.environ.get("ATLASSIAN_URL", atlassian_default_url),
+        "transport": atlassian_transport,
     }
 }
 

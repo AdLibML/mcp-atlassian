@@ -194,7 +194,7 @@ class TestWorklogMixin:
         }
         worklog_mixin.jira.post.return_value = mock_result
         worklog_mixin.jira.resource_url.return_value = (
-            "https://jira.example.com/rest/api/2/issue"
+            "https://jira.example.com/rest/api/3/issue"
         )
 
         # Call the method
@@ -221,7 +221,7 @@ class TestWorklogMixin:
         }
         worklog_mixin.jira.post.return_value = mock_result
         worklog_mixin.jira.resource_url.return_value = (
-            "https://jira.example.com/rest/api/2/issue"
+            "https://jira.example.com/rest/api/3/issue"
         )
 
         # Call the method
@@ -244,7 +244,7 @@ class TestWorklogMixin:
         }
         worklog_mixin.jira.post.return_value = mock_result
         worklog_mixin.jira.resource_url.return_value = (
-            "https://jira.example.com/rest/api/2/issue"
+            "https://jira.example.com/rest/api/3/issue"
         )
 
         # Call the method
@@ -272,7 +272,7 @@ class TestWorklogMixin:
         }
         worklog_mixin.jira.post.return_value = mock_result
         worklog_mixin.jira.resource_url.return_value = (
-            "https://jira.example.com/rest/api/2/issue"
+            "https://jira.example.com/rest/api/3/issue"
         )
 
         # Setup started time
@@ -299,7 +299,7 @@ class TestWorklogMixin:
         }
         worklog_mixin.jira.post.return_value = mock_result
         worklog_mixin.jira.resource_url.return_value = (
-            "https://jira.example.com/rest/api/2/issue"
+            "https://jira.example.com/rest/api/3/issue"
         )
 
         # Add _markdown_to_jira method
@@ -324,7 +324,7 @@ class TestWorklogMixin:
         # Setup mock to raise exception
         worklog_mixin.jira.post.side_effect = Exception("Worklog add error")
         worklog_mixin.jira.resource_url.return_value = (
-            "https://jira.example.com/rest/api/2/issue"
+            "https://jira.example.com/rest/api/3/issue"
         )
 
         # Call the method and verify exception
@@ -341,7 +341,7 @@ class TestWorklogMixin:
         }
         worklog_mixin.jira.post.return_value = mock_result
         worklog_mixin.jira.resource_url.return_value = (
-            "https://jira.example.com/rest/api/2/issue"
+            "https://jira.example.com/rest/api/3/issue"
         )
 
         # Make edit_issue raise an exception

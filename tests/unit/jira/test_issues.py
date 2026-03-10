@@ -755,7 +755,7 @@ class TestIssuesMixin:
         create_response = {
             "id": "12345",
             "key": "TEST-456",
-            "self": "https://jira.example.com/rest/api/2/issue/12345",
+            "self": "https://jira.example.com/rest/api/3/issue/12345",
         }
         issues_mixin.jira.create_issue.return_value = create_response
 
